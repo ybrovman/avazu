@@ -1,4 +1,4 @@
-# Kaggle competition: Avazu
+# Kaggle Competition: Avazu Click-Through Rate Prediction
 # avazu.py
 # Yuri M. Brovman
 
@@ -20,6 +20,13 @@ from sklearn import ensemble
 from sklearn.naive_bayes import GaussianNB
 
 def makeHist(filename, len):
+    """
+    GOAL:
+    Create map representing the histogram of the data in each column.
+    INPUT:
+    filename: name of file to save results using pickle
+    len: number of training examples to use
+    """
     dataHist = {}
     columns = []
     with open("train.csv", 'rb') as csvfile:
@@ -42,6 +49,15 @@ def makeHist(filename, len):
     with open(filename, 'w') as f: pickle.dump(dataHist, f)
 
 def redef(dataHist):
+    """
+    GOAL:
+    Create hash map by replacing top 95% of data values in every
+    column with integer values, in order to avoid long tail.
+    INPUT:
+    dataHist: hash map of histogram from first pass of data
+    OUTPUT:
+    dataDict: map of top most occuring values in data
+    """
     dataDict = {}
     total = sum(dataHist[dataHist.keys()[0]].values())
     for col in dataHist.keys():
@@ -59,6 +75,18 @@ def redef(dataHist):
     return dataDict
 
 def makeData(filename, len, f):
+    """
+    GOAL:
+    Load the data into memory using the dataDict hash map.
+    INPUT:
+    filename: name of file where to read data from
+    len: number of samples to read in
+    f: flag indicating training (f=0) or test (f=1) data
+    OUTPUT:
+    id: numpy array of id strings
+    Y: numpy array of click (main classification label)
+    X: numpy array of feature vectors
+    """
     id = []
     Y = []
     X = []
@@ -75,7 +103,7 @@ def makeData(filename, len, f):
                         # if j == 2-f: val = val[-2:]
                         if val in dataDict[columns[j]]:
                             sample[j] = dataDict[columns[j]][val]
-                        else: sample[j] = 0
+                        else: sample[j] = 0 # if not in dataDict hash map, = 0
                 if f == 1: id.append(sample[0])
                 if f == 0: Y.append(int(sample[1]))
                 X.append(sample[2-f:])
@@ -83,14 +111,29 @@ def makeData(filename, len, f):
     return np.array(id), np.array(Y), np.delete(np.array(X), [9-f,10-f], 1)
 
 def getLogLoss(yCV, pred):
+    """
+    GOAL:
+    Calculate the logloss evaluation metric.
+    INPUT:
+    yCV: ground truth classification labels
+    pred: prediction probabilities
+    OUTPUT:
+    logloss
+    """
     # using vecorized implementation
     res = np.dot(1-yCV,np.log(pred[:,0])) + np.dot(yCV,np.log(pred[:,1]))
     return -1./len(yCV) * res
 
 def writeTest():
+    """
+    GOAL:
+    Write the output file for submission.
+    """
     print "loading..."
 
     idtest, Ytest, Xtest = makeData("test.csv", 5000001, 1)
+
+    # load saved trained classifier
     with open('gbtALL_hist1full.pickle') as f: clf = pickle.load(f)
     Xtemp = preprocessing.scale(Xtest.astype(float))
     print "predicting..."
@@ -117,16 +160,32 @@ def writeTest():
         write.writerows(predTestwrite)
 
 def train(dataDict, hist, len):
+    """
+    GOAL:
+    Train the classifier using the main training data.
+    INPUT:
+    dataDict: hash map of histogram from first pass of data
+    hist: name of hash map file used
+    len: number of training examples
+    OUTPUT:
+    clf: trained classifier
+    """
     start_time = time.time()
 
+    # load the data
     idtrain, Ytrain, Xtrain = makeData("train.csv", len, 0)
+
+    # mean normalization and feature scaling
     Xtemp = preprocessing.scale(Xtrain.astype(float))
+
+    # break up the data to train / cross validation sets at 90/10 split
     stop = .9
     X, XCV, y, yCV = cv.train_test_split(Xtemp, Ytrain, test_size=stop, \
                                             random_state=42)
 
     del idtrain, Ytrain, Xtrain, Xtemp
 
+    # test different classifiers
     # clf = GaussianNB()
     # clf = svm.SVC(kernel='rbf', probability=True)
     # clf = tree.DecisionTreeClassifier()
@@ -141,6 +200,7 @@ def train(dataDict, hist, len):
     uCV = [] #clf.predict(XCV)
     pred_prob_raw = clf.predict_proba(XCV)
 
+    # set threshold at 1e-7 in order to avoid calculating log(0)
     pred_prob = []
     threshold = 1e-7
     for i, val in enumerate(pred_prob_raw):
@@ -151,10 +211,13 @@ def train(dataDict, hist, len):
         pred_prob.append([c0,c1])
 
     pred_prob = np.array(pred_prob)
+
+    # print results
     print type(clf).__name__, " >>>", hist, "<<<    # train =", stop*(len-1)
     print 'LogLoss: ', getLogLoss(yCV, pred_prob)
     print 'CV Set Accuracy: ', clf.score(XCV, yCV)
 
+    # delete variable to free RAM
     del X, XCV, y, yCV, uCV, pred_prob_raw, pred_prob
     return clf
 
@@ -162,14 +225,17 @@ def train(dataDict, hist, len):
 ######################## MAIN CODE HERE ###########################
 ###################################################################
 
+# make a hash map of the data in every column
 hist = 'dataHist1full.pickle'
 # makeHist(hist, 50000001)
 with open(hist) as f: dataHist = pickle.load(f)
 dataDict = redef(dataHist)
 
+# train the classifier
 clf = train(dataDict, hist, 1000001)
+
+# save the classifier
 # with open('gbtALL_hist1full.pickle', 'w') as f: pickle.dump(clf, f)
+
+# write the output file for submission
 # writeTest()
-
-
-
