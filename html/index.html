@@ -1,0 +1,28 @@
+<HTML>
+<HEAD>
+<TITLE>Kaggle Competition: Avazu Click-Through Rate Prediction</TITLE>
+</HEAD>
+
+<BODY>
+<CENTER>
+<H1>Kaggle Competition: Avazu Click-Through Rate Prediction</H1>
+<H3>by Yuri Brovman, PhD</H3>
+<table width = "800">
+	<tr><td>
+		<CENTER>
+
+<p align="left"><b>Data/Code:</b> Here is the link to the actual <a href="http://www.kaggle.com/c/avazu-ctr-prediction">Avazu</a> Kaggle competition with all of the data and information. My code for my solution is on <a href="https://github.com/ybrovman/avazu">GitHub</a>.</p>
+
+<p align="left"><b>Analysis:</b> Here is a basic explanation of my code and analysis. I used Python with the scikit-learn library to perform most of the calculations.  </p>
+
+<p align="left"><b>Figure 1.</b> In order to understand which classifier to utilize for my predictions, it is important to understand computational limitations. This graph shows the model fitting time for several classifiers that I used, plotted as a function of the number of training examples. My machine has an Intel Core i7-2600K 3.4GHz CPU and 8GB RAM. Both the logistic regression and the Gaussian Naive Bayes classifiers were very fast, performing under 3 seconds for 5 million training examples. The support vector machine classifier (SVC) did not scale very well and I stopped testing after only 200,000 training examples. </p>
+
+<img src="classifier_timing2.jpeg", width=600>
+</CENTER>
+</td></tr>
+</table>
+</CENTER>
+
+</BODY>
+
+</HTML>
