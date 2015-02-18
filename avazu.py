@@ -217,7 +217,7 @@ def train(dataDict, hist, len):
     print 'LogLoss: ', getLogLoss(yCV, pred_prob)
     print 'CV Set Accuracy: ', clf.score(XCV, yCV)
 
-    # delete variable to free RAM
+    # delete variables to free RAM
     del X, XCV, y, yCV, uCV, pred_prob_raw, pred_prob
     return clf
 

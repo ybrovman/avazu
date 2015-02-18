@@ -6,7 +6,7 @@
 <BODY>
 <CENTER>
 <H1>Kaggle Competition: Avazu Click-Through Rate Prediction</H1>
-<H3>by Yuri Brovman, PhD</H3>
+<H3>by Yuri M. Brovman, PhD</H3>
 <table width = "800">
 	<tr><td>
 		<CENTER>
@@ -18,6 +18,11 @@
 <p align="left"><b>Figure 1.</b> In order to understand which classifier to utilize for my predictions, it is important to understand computational limitations. This graph shows the model fitting time for several classifiers that I used, plotted as a function of the number of training examples. My machine has an Intel Core i7-2600K 3.4GHz CPU and 8GB RAM. Both the logistic regression and the Gaussian Naive Bayes classifiers were very fast, performing under 3 seconds for 5 million training examples. The support vector machine classifier (SVC) did not scale very well and I stopped testing after only 200,000 training examples. </p>
 
 <img src="classifier_timing2.jpeg", width=600>
+
+<p align="left"><b>Figure 2.</b> The cross validation set logloss error is presented here for several classifiers. I used 2 million training examples with a train / cross validation set split of 90% / 10%, respectively. Clearly the logistic regression as well as the gradient boosting classifiers produced superior results.
+</p>
+
+<img src="classifier_performance.jpeg", width=600>
 </CENTER>
 </td></tr>
 </table>
