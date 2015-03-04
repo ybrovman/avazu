@@ -180,7 +180,7 @@ def train(dataDict, hist, len):
 
     # break up the data to train / cross validation sets at 90/10 split
     stop = .9
-    X, XCV, y, yCV = cv.train_test_split(Xtemp, Ytrain, test_size=stop, \
+    X, XCV, y, yCV = cv.train_test_split(Xtemp, Ytrain, train_size=stop, \
                                             random_state=42)
 
     del idtrain, Ytrain, Xtrain, Xtemp
