@@ -120,7 +120,7 @@ def getLogLoss(yCV, pred):
     OUTPUT:
     logloss
     """
-    # using vecorized implementation
+    # using vectorized implementation
     res = np.dot(1-yCV,np.log(pred[:,0])) + np.dot(yCV,np.log(pred[:,1]))
     return -1./len(yCV) * res
 
